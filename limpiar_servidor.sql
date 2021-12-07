@@ -1,24 +1,24 @@
-use mysql;
+use information_schema;
 drop procedure if exists limpiar_servidor;
 
-delimiter #
+delimiter //
 create procedure limpiar_servidor()
 begin
-    declare cur1 CURSOR FOR show databases;
-    declare bdd varchar(30);   
-    set @basesLocales='information_schema,mysql,performance_schema,sys';
+    declare bdd varchar(64);   
+    set @basesLocales="information_schema,mysql,performance_schema,sys";
+    DECLARE cur1 CURSOR FOR SELECT SCHEMA_NAME FROM SCHEMATA;
     
     OPEN cur1;
 
-    bucle: LOOP
+    LOOP
         FETCH cur1 into bdd;
         if bdd not in(@basesLocales)
             drop database bdd;
         end if;
-    end loop;
+    END LOOP;
     
     close cur1;
-end#
+end//
 delimiter ;
 
 call limpiar_servidor();
